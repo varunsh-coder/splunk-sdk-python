@@ -3,15 +3,23 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+
 jobs:
   publish:
     name: Deploy Release to PyPI
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@6b3083af2869dc3314a0257a42f4af696cc79ba3 # v2.3.1
+        with:
+          egress-policy: audit
+
       - name: Checkout source
-        uses: actions/checkout@v2.3.2
+        uses: actions/checkout@2036a08e25fa78bbd946711a407b529a0a1204bf # v2.3.2
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@75f3110429a8c05be0e1bf360334e4cced2b63fa # v2.3.3
         with:
           python-version: 3.7
       - name: Install dependencies
@@ -19,7 +27,7 @@ jobs:
       - name: Build package
         run: python setup.py sdist
       - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.3.1
+        uses: pypa/gh-action-pypi-publish@bce3b74dbf8cc32833ffba9d15f83425c1a736e0 # v1.3.1
         with:
           user: __token__
           password: ${{ secrets.pypi_password }}
@@ -30,7 +38,7 @@ jobs:
           rm -rf ./docs/_build
           tox -e docs
       - name : Docs Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: python_sdk_docs
           path: docs/_build/html

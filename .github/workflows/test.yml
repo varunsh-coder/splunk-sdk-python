@@ -3,6 +3,9 @@ name: Python CI
 on:
   [ push, pull_request ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
 
@@ -19,14 +22,19 @@ jobs:
       fail-fast: false
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@6b3083af2869dc3314a0257a42f4af696cc79ba3 # v2.3.1
+        with:
+          egress-policy: audit
+
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
 
       - name: Run docker-compose
         run: SPLUNK_VERSION=${{matrix.splunk-version}} docker-compose up -d
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@75f3110429a8c05be0e1bf360334e4cced2b63fa # v2.3.3
         with:
           python-version: ${{ matrix.python }}
 
